@@ -1,22 +1,23 @@
 import { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { addContact } from 'redux/operation';
+import { selectContacts } from 'redux/selectors';
+import { nanoid } from '@reduxjs/toolkit';
 import PropTypes from 'prop-types';
-import { FormContact } from './ContactForm.styled';
 
 import { Notify } from 'notiflix/build/notiflix-notify-aio';
 import { notifyConfigs } from 'config/notifyConfig';
 
+import { FormContact } from './ContactForm.styled';
 import Input from 'components/PhoneBook/Input';
 import Button from 'components/PhoneBook/Button';
-import { useDispatch, useSelector } from 'react-redux';
-import { addContacts } from 'redux/slice/contactsSlice';
-import { getContacts } from 'redux/selectors';
 
 export default function ContactForm({ title }) {
   const [name, setName] = useState('');
   const [number, setNumber] = useState('');
 
   const dispatch = useDispatch();
-  const contacts = useSelector(getContacts);
+  const contacts = useSelector(selectContacts);
 
   function handleInputChange(e) {
     const { name, value } = e.currentTarget;
@@ -45,8 +46,7 @@ export default function ContactForm({ title }) {
     if (existContact(name)) {
       return Notify.info('Such a contact already exists', notifyConfigs);
     }
-    dispatch(addContacts(name, number));
-
+    dispatch(addContact({ id: nanoid(), name, number }));
     form.reset();
   }
 

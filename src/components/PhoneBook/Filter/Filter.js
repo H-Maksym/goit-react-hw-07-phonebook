@@ -6,12 +6,12 @@ import { BsSearch } from 'react-icons/bs';
 import Box from 'components/PhoneBook/Box';
 import { changeFilterValue } from 'redux/slice/contactsSlice';
 import { useDispatch, useSelector } from 'react-redux';
-import { getFilterValue } from 'redux/selectors';
+import { selectFilterValue } from 'redux/selectors';
 
 export default function Filter({ title = '', name }) {
   // !The form also has its own event response logic.
   // !If we have a form submit and input event, then to control the form, we must separately make an event handler on the form.
-  const value = useSelector(getFilterValue);
+  const value = useSelector(selectFilterValue);
   const dispatch = useDispatch();
 
   function changeFilter(e) {
@@ -44,6 +44,4 @@ export default function Filter({ title = '', name }) {
 Filter.propTypes = {
   title: PropTypes.string,
   name: PropTypes.string.isRequired,
-  value: PropTypes.string,
-  onChange: PropTypes.func,
 };

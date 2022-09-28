@@ -1,4 +1,4 @@
-// import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import useToggleModal from 'hooks/toggleModal';
 
 //* Components
@@ -10,17 +10,23 @@ import Notification from 'components/PhoneBook/Notification';
 import Box from 'components/PhoneBook/Box';
 import Modal from 'components/PhoneBook/Modal';
 import AddContact from 'components/PhoneBook/AddContact';
+import Loader from 'components/Loader';
 
-import { useSelector } from 'react-redux';
-import { getContacts } from 'redux/selectors';
+import { useSelector, useDispatch } from 'react-redux';
+import { selectContacts, selectIsLoading, selectError } from 'redux/selectors';
+import { fetchContacts } from 'redux/operation';
 
 export default function App() {
-  //!Initialization of the LS object
-  //*When transferring to the initial value of the state of the anonymous callback function, what it returns as the initial value and this callback function will be executed/updated only at the first rendering.
-
+  const dispatch = useDispatch();
+  const contacts = useSelector(selectContacts);
+  const isLoading = useSelector(selectIsLoading);
+  const error = useSelector(selectError);
   const { isOpen, openModal, closeModal, handleKeyDown, handleBackdropClick } =
     useToggleModal();
-  const contacts = useSelector(getContacts);
+
+  useEffect(() => {
+    dispatch(fetchContacts());
+  }, [dispatch]);
 
   return (
     <>
@@ -49,7 +55,8 @@ export default function App() {
           </Modal>
         )}
       </Box>
-
+      {error && <div>Error...</div>}
+      {isLoading && <Loader />}
       <Box
         mx="auto"
         px={15}
@@ -60,6 +67,7 @@ export default function App() {
         as="section"
       >
         <Title>Contacts</Title>
+
         {contacts.length > 0 ? (
           <>
             <Filter name="filter" />

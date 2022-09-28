@@ -1,61 +1,74 @@
-import { createSlice, nanoid } from '@reduxjs/toolkit';
+import { createSlice } from '@reduxjs/toolkit';
+import { fetchContacts, addContact, deleteContact } from 'redux/operation';
 
-import { persistReducer } from 'redux-persist';
-import storage from 'redux-persist/lib/storage';
+import { Notify } from 'notiflix/build/notiflix-notify-aio';
+import { notifyConfigs } from 'config/notifyConfig';
 
-const initialContacts = [
-  { id: 'id-1', name: 'Rosie Simpson', number: '459-12-56' },
-  { id: 'id-2', name: 'Hermione Kline', number: '443-89-12' },
-  { id: 'id-3', name: 'Eden Clements', number: '645-17-79' },
-  { id: 'id-4', name: 'Annie Copeland', number: '227-91-26' },
-];
+const handlePending = state => {
+  state.isLoading = true;
+};
+const handleRejected = (state, action) => {
+  state.isLoading = false;
+  state.error = action.payload;
+};
 
 const contactsSlice = createSlice({
   name: 'contacts',
   initialState: {
-    items: initialContacts,
+    items: [],
     isLoading: false,
     error: null,
     filter: '',
   },
+  //change filter
   reducers: {
-    addContacts: {
-      reducer(state, action) {
-        state.items.unshift(action.payload);
-      },
-      prepare(name, number) {
-        return {
-          payload: {
-            id: nanoid(),
-            name,
-            number,
-          },
-        };
-      },
-    },
-
-    deleteContacts(state, action) {
-      state.items = state.items.filter(contact => {
-        return contact.id !== action.payload;
-      });
-    },
     changeFilterValue(state, action) {
       state.filter = action.payload;
     },
   },
+
+  extraReducers: {
+    // fetchContacts
+
+    [fetchContacts.pending]: handlePending,
+    [fetchContacts.fulfilled](state, action) {
+      state.isLoading = false;
+      state.error = null;
+      state.items = action.payload.reverse();
+    },
+    [fetchContacts.rejected]: handleRejected,
+
+    //addContact
+    [addContact.pending]: handlePending,
+    [addContact.fulfilled](state, action) {
+      state.isLoading = false;
+      state.error = null;
+      state.items.unshift(action.payload);
+      Notify.success(
+        `Contact  ${action.payload.name} added to phonebook`,
+        notifyConfigs
+      );
+    },
+    [addContact.rejected]: handleRejected,
+
+    //delContact
+
+    [deleteContact.pending]: handlePending,
+    [deleteContact.fulfilled](state, action) {
+      state.isLoading = false;
+      state.error = null;
+      state.items = state.items.filter(
+        contact => contact.id !== action.payload.id
+      );
+      Notify.info(
+        `Contact  ${action.payload.name} deleted from phonebook`,
+        notifyConfigs
+      );
+    },
+    [deleteContact.rejected]: handleRejected,
+  },
 });
 
-//* Settings Redux-Persist for save to local storage
-const persistConfig = {
-  key: 'contacts',
-  storage,
-  whitelist: ['items'],
-};
+export const { changeFilterValue } = contactsSlice.actions;
 
-export const contactsReducer = persistReducer(
-  persistConfig,
-  contactsSlice.reducer
-);
-
-export const { addContacts, deleteContacts, changeFilterValue } =
-  contactsSlice.actions;
+export const contactsReducer = contactsSlice.reducer;

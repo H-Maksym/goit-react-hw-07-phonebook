@@ -3,13 +3,13 @@ import PropTypes from 'prop-types';
 import Button from 'components/PhoneBook/Button';
 import { StyledTextList } from './ContactItem.styled';
 import { useDispatch } from 'react-redux';
-import { deleteContacts } from 'redux/slice/contactsSlice';
+import { deleteContact } from 'redux/operation';
 
 export default function ContactItem({ contact }) {
   const dispatch = useDispatch();
 
   function onDelContact() {
-    dispatch(deleteContacts(contact.id));
+    dispatch(deleteContact(contact.id));
   }
 
   return (
@@ -23,6 +23,4 @@ export default function ContactItem({ contact }) {
 
 ContactItem.propTypes = {
   contact: PropTypes.object,
-  // name: PropTypes.string,
-  // number: PropTypes.string,
 };

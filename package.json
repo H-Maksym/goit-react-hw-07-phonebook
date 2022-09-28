@@ -2,10 +2,11 @@
   "name": "react-homework-template",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://h-maksym.github.io/goit-react-hw-06-phonebook/",
+  "homepage": "https://h-maksym.github.io/goit-react-hw-07-phonebook/",
   "dependencies": {
     "@emotion/react": "^11.10.4",
     "@reduxjs/toolkit": "^1.8.5",
+    "axios": "^0.27.2",
     "normalize.css": "^8.0.1",
     "prop-types": "^15.8.1",
     "react": "^18.1.0",
