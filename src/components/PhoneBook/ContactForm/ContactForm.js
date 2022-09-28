@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { addContact } from 'redux/operation';
-import { selectContacts } from 'redux/selectors';
+import { selectContacts, selectIsLoading } from 'redux/selectors';
 import { nanoid } from '@reduxjs/toolkit';
 import PropTypes from 'prop-types';
 
@@ -18,6 +18,7 @@ export default function ContactForm({ title }) {
 
   const dispatch = useDispatch();
   const contacts = useSelector(selectContacts);
+  const isLoading = useSelector(selectIsLoading);
 
   function handleInputChange(e) {
     const { name, value } = e.currentTarget;
@@ -45,6 +46,9 @@ export default function ContactForm({ title }) {
     const form = e.target;
     if (existContact(name)) {
       return Notify.info('Such a contact already exists', notifyConfigs);
+    }
+    if (isLoading) {
+      return;
     }
     dispatch(addContact({ id: nanoid(), name, number }));
     form.reset();
